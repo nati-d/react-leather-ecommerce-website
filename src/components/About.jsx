@@ -2,8 +2,8 @@ import React from "react";
 
 const About = () => {
   return (
-    <div className="grid-cols-1 m-10 px-20 grid md:grid-cols-2 gap-8 " style={{gridTemplateColumns:"40% 55%"}}>
-      <div className="px-20 gap-14 flex flex-col justify-center">
+    <div className="md:grid flex flex-col md:m-10 md:px-20 md:grid-cols-2 gap-8 " style={{gridTemplateColumns:"40% 55%"}}>
+      <div className="md:px-20 gap-14 flex flex-col justify-center">
         <h1
           className="text-6xl font-bold"
           style={{ fontFamily: "'Anton', sans-serif" }}
@@ -33,7 +33,7 @@ const About = () => {
         <img
           src="https://images.pexels.com/photos/18703865/pexels-photo-18703865/free-photo-of-woman-in-jacket-and-scarf-leaving-vintage-train-wagon.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
           alt=""
-          className=" w-[80%] h-full rounded-2xl"
+          className="w-[100%] md:w-[80%] h-full rounded-2xl"
         />
         <div className="absolute w-[300px] h-[200px]  bottom-10 left-5 -z-10 rounded-xl" style={{background:"#FEAB78"}}></div>
         <div className="absolute w-[300px] h-[200px] top-10 right-5 -z-10 rounded-xl" style={{background:"#FEAB78"}}></div>

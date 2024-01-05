@@ -1,71 +1,63 @@
 import React, { useState, useEffect } from "react";
-import { trending } from "../constants";
 import ProductCard from "../components/ProductCard";
 import ReactPaginate from "react-paginate";
+import { productss } from "../constants";
+import { Link } from "react-router-dom";
 
 const itemsPerPage = 8;
 
 const Shop = () => {
-  const [originalProducts] = useState(trending);
-  const [products, setProducts] = useState([]);
+  const [originalProducts] = useState(productss);
+  const [products, setProducts] = useState([originalProducts]);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [loading, setLoading] = useState(false);
   const [sortBy, setSortBy] = useState("default");
-  const [currentPage, setCurrentPage] = useState(0); // Changed to zero-based index
+  const [currentPage, setCurrentPage] = useState(0);
 
   useEffect(() => {
-    filterProducts(selectedCategory, sortBy);
-  }, [selectedCategory, sortBy]);
+    filterAndSortProducts();
+  }, [selectedCategory, sortBy, currentPage]);
 
-  useEffect(() => {
-    paginate();
-  }, [products, currentPage]);
+  const filterAndSortProducts = async () => {
+    setLoading(true);
 
-  const handleCategoryChange = (category) => {
-    setSelectedCategory(category);
-    setCurrentPage(0); 
-  };
+    let filteredProducts = [...originalProducts];
 
-  const handleSortChange = (sortOption) => {
-    setSortBy(sortOption);
-  };
-
-  const filterProducts = async (category, sortOption) => {
-    try {
-      setLoading(true);
-      let filteredProducts = [...originalProducts];
-
-      if (category !== "all") {
-        filteredProducts = filteredProducts.filter(
-          (product) => product.category === category
-        );
-      }
-
-      if (sortOption === "priceLowToHigh") {
-        filteredProducts.sort((a, b) => a.price - b.price);
-      } else if (sortOption === "priceHighToLow") {
-        filteredProducts.sort((a, b) => b.price - a.price);
-      }
-
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      setProducts([...filteredProducts]);
-    } finally {
-      setLoading(false);
+    if (selectedCategory !== "all") {
+      filteredProducts = filteredProducts.filter(
+        (product) =>
+          product.category.toLowerCase() === selectedCategory.toLowerCase()
+      );
     }
-  };
 
-  const paginate = () => {
+    if (sortBy === "priceLowToHigh") {
+      filteredProducts.sort((a, b) => a.price - b.price);
+    } else if (sortBy === "priceHighToLow") {
+      filteredProducts.sort((a, b) => b.price - a.price);
+    }
+
     const startIndex = currentPage * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    setProducts(originalProducts.slice(startIndex, endIndex));
+
+    setProducts([...filteredProducts.slice(startIndex, endIndex)]);
+    setLoading(false);
   };
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
 
-  const totalPages = Math.ceil(originalProducts.length / itemsPerPage);
+  const totalPages = Math.ceil(productss.length / itemsPerPage);
+
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category);
+    setCurrentPage(0);
+  };
+
+  const handleSortChange = (sortOption) => {
+    setSortBy(sortOption);
+    setCurrentPage(0);
+  };
 
   return (
     <div className="container mx-auto mt-8">
@@ -78,11 +70,23 @@ const Shop = () => {
             className="border p-2 bg-white text-black"
           >
             <option value="all">All</option>
-            <option value="bags">Bags</option>
-            <option value="wallets">Wallets</option>
-            <option value="shoes">Shoes</option>
-            <option value="belts">Belts</option>
-            <option value="coats">Coats</option>
+            <option value="bag">Bags</option>
+            <option value="wallet">Wallets</option>
+            <option value="shoe">Shoes</option>
+            <option value="belt">Belts</option>
+            <option value="coat">Coats</option>
+          </select>
+        </div>
+        <div>
+          <label className="mr-2">Sort by:</label>
+          <select
+            value={sortBy}
+            onChange={(e) => handleSortChange(e.target.value)}
+            className="border p-2 bg-white text-black"
+          >
+            <option value="default">Default</option>
+            <option value="priceLowToHigh">Price Low to High</option>
+            <option value="priceHighToLow">Price High to Low</option>
           </select>
         </div>
       </div>
@@ -90,14 +94,14 @@ const Shop = () => {
       {loading ? (
         <p className="text-center text-gray-600">Loading...</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 ">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {products.map((item) => (
-            <ProductCard key={item.id} item={item} className="mb-8" />
+              <ProductCard item={item} className="mb-8" />
           ))}
         </div>
       )}
 
-<ReactPaginate
+      <ReactPaginate
         breakLabel="..."
         nextLabel="Next"
         onPageChange={handlePageChange}
